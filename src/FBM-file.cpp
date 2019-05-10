@@ -3,6 +3,7 @@
 #include <fstream>
 #include <stdexcept>
 #include <bigstatsr/types.h>
+#include <filesystem>
 
 #define ERROR_POS "Dimensions should be at least 1."
 
@@ -41,17 +42,16 @@ void createFile(std::string fileName,
 /******************************************************************************/
 
 template <typename T>
-void addColumns(std::string fileName,
+void resizeFile(std::string fileName,
                 std::size_t nrow,
-                std::size_t ncol_add) {
+                std::size_t ncol) {
 
   try {
-    std::fstream filestr(fileName.c_str());
-    if (filestr) {
-      std::streambuf* pbuf = filestr.rdbuf();
-      pbuf->pubseekoff(nrow * ncol_add * sizeof(T) - 1, filestr.end);
-      pbuf->sputc(0);
-      filestr.close();
+
+    std::filesystem::path file = fileName.c_str();
+
+    if (std::filesystem::exists(file)) {
+      std::filesystem::resize_file(file, nrow * ncol * sizeof(T));
     }
 
   } catch(std::exception& ex) {
@@ -60,18 +60,18 @@ void addColumns(std::string fileName,
 
 }
 
-#define ADD_COLUMNS(TYPE) return addColumns<TYPE>(fileName, nrow, ncol_add);
+#define RESIZE_FILE(TYPE) return resizeFile<TYPE>(fileName, nrow, ncol);
 
 // [[Rcpp::export]]
-void addColumns(std::string fileName,
+void resizeFile(std::string fileName,
                 std::size_t nrow,
-                std::size_t ncol_add,
+                std::size_t ncol,
                 int type) {
 
   myassert(nrow > 0, ERROR_POS);
-  myassert(ncol_add > 0, ERROR_POS);
+  myassert(ncol > 0, ERROR_POS);
 
-  DISPATCH_TYPE(ADD_COLUMNS)
+  DISPATCH_TYPE(RESIZE_FILE)
 }
 
 /******************************************************************************/

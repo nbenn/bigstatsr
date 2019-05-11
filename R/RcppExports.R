@@ -25,6 +25,10 @@ resizeFile <- function(fileName, nrow, ncol, type) {
     invisible(.Call(`_bigstatsr_resizeFile`, fileName, nrow, ncol, type))
 }
 
+getFileDu <- function(filename) {
+    .Call(`_bigstatsr_getFileDu`, filename)
+}
+
 replaceVecOne <- function(xpbm, elemInd, val) {
     invisible(.Call(`_bigstatsr_replaceVecOne`, xpbm, elemInd, val))
 }

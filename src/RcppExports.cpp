@@ -80,6 +80,17 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// getFileDu
+size_t getFileDu(const std::string& filename);
+RcppExport SEXP _bigstatsr_getFileDu(SEXP filenameSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::string& >::type filename(filenameSEXP);
+    rcpp_result_gen = Rcpp::wrap(getFileDu(filename));
+    return rcpp_result_gen;
+END_RCPP
+}
 // replaceVecOne
 void replaceVecOne(SEXP xpbm, const NumericVector& elemInd, SEXP val);
 RcppExport SEXP _bigstatsr_replaceVecOne(SEXP xpbmSEXP, SEXP elemIndSEXP, SEXP valSEXP) {
@@ -552,6 +563,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_bigstatsr_extractMat", (DL_FUNC) &_bigstatsr_extractMat, 3},
     {"_bigstatsr_createFile", (DL_FUNC) &_bigstatsr_createFile, 4},
     {"_bigstatsr_resizeFile", (DL_FUNC) &_bigstatsr_resizeFile, 4},
+    {"_bigstatsr_getFileDu", (DL_FUNC) &_bigstatsr_getFileDu, 1},
     {"_bigstatsr_replaceVecOne", (DL_FUNC) &_bigstatsr_replaceVecOne, 3},
     {"_bigstatsr_replaceVec", (DL_FUNC) &_bigstatsr_replaceVec, 3},
     {"_bigstatsr_replaceMatOne", (DL_FUNC) &_bigstatsr_replaceMatOne, 4},

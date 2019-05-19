@@ -23,3 +23,15 @@ SEXP getXPtrFBM(std::string path, std::size_t n, std::size_t m, int type) {
 }
 
 /******************************************************************************/
+
+// [[Rcpp::export]]
+SEXP getDataPtrFBM(Rcpp::Environment BM) {
+  double *dbl_ptr;
+  Rcpp::XPtr<FBM> xpBM = BM["address"];
+  myassert(xpBM->matrix_type() == 8,
+           "Retrieving data pointer is available for 'double' FBMs only.");
+  dbl_ptr = static_cast<double *>(xpBM->matrix());
+  return R_MakeExternalPtr(dbl_ptr, R_NilValue, R_NilValue);
+}
+
+/******************************************************************************/

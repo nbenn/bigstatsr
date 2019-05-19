@@ -49,6 +49,10 @@ getXPtrFBM <- function(path, n, m, type) {
     .Call(`_bigstatsr_getXPtrFBM`, path, n, m, type)
 }
 
+getDataPtrFBM <- function(BM) {
+    .Call(`_bigstatsr_getDataPtrFBM`, BM)
+}
+
 prod_FBM_mat <- function(BM, A) {
     .Call(`_bigstatsr_prod_FBM_mat`, BM, A)
 }

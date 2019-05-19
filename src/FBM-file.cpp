@@ -3,6 +3,8 @@
 #include <fstream>
 #include <stdexcept>
 #include <bigstatsr/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #define ERROR_POS "Dimensions should be at least 1."
 
@@ -41,37 +43,39 @@ void createFile(std::string fileName,
 /******************************************************************************/
 
 template <typename T>
-void addColumns(std::string fileName,
+void resizeFile(std::string fileName,
                 std::size_t nrow,
-                std::size_t ncol_add) {
+                std::size_t ncol) {
 
-  try {
-    std::fstream filestr(fileName.c_str());
-    if (filestr) {
-      std::streambuf* pbuf = filestr.rdbuf();
-      pbuf->pubseekoff(nrow * ncol_add * sizeof(T) - 1, filestr.end);
-      pbuf->sputc(0);
-      filestr.close();
-    }
-
-  } catch(std::exception& ex) {
+  if(truncate(fileName.c_str(), nrow * ncol * sizeof(T)) != 0) {
     throw std::runtime_error("Problem resizing the backing file.");
   }
-
 }
 
-#define ADD_COLUMNS(TYPE) return addColumns<TYPE>(fileName, nrow, ncol_add);
+#define RESIZE_FILE(TYPE) return resizeFile<TYPE>(fileName, nrow, ncol);
 
 // [[Rcpp::export]]
-void addColumns(std::string fileName,
+void resizeFile(std::string fileName,
                 std::size_t nrow,
-                std::size_t ncol_add,
+                std::size_t ncol,
                 int type) {
 
   myassert(nrow > 0, ERROR_POS);
-  myassert(ncol_add > 0, ERROR_POS);
+  myassert(ncol > 0, ERROR_POS);
 
-  DISPATCH_TYPE(ADD_COLUMNS)
+  DISPATCH_TYPE(RESIZE_FILE)
 }
 
 /******************************************************************************/
+
+// [[Rcpp::export]]
+size_t getFileDu(const std::string& filename) {
+
+  struct stat st;
+
+  if(stat(filename.c_str(), &st) != 0) {
+    throw std::runtime_error("Problem determining backing file disk usage.");
+  }
+
+  return st.st_blksize * st.st_blocks;   
+}

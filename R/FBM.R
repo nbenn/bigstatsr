@@ -126,11 +126,28 @@ FBM_RC <- methods::setRefClass(
 
       assert_int(ncol_add)
       size_before <- file.size(bkfile <- .self$bk)
-      addColumns(bkfile, .self$nrow, ncol_add, .self$type)
-
       ncol_after <- .self$ncol + ncol_add
+      resizeFile(bkfile, .self$nrow, ncol_after, .self$type)
+
       if ( (file.size(bkfile) / ncol_after) != (size_before / .self$ncol) )
         warning2("Inconsistency of backingfile size after adding columns.")
+
+      .self$ncol <- ncol_after
+      .self$extptr <- methods::new("externalptr")  ## reinit pointer
+      if (.self$is_saved) .self$save()
+
+      invisible(.self)
+    },
+
+    rm_columns = function(ncol_rm) {
+
+      assert_int(ncol_rm)
+      size_before <- file.size(bkfile <- .self$bk)
+      ncol_after <- .self$ncol - ncol_rm
+      resizeFile(bkfile, .self$nrow, ncol_after, .self$type)
+
+      if ( (file.size(bkfile) / ncol_after) != (size_before / .self$ncol) )
+        warning2("Inconsistency of backingfile size after removing columns.")
 
       .self$ncol <- ncol_after
       .self$extptr <- methods::new("externalptr")  ## reinit pointer
